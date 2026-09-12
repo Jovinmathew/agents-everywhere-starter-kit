@@ -116,6 +116,6 @@ export function messagePage(title: string, message: string, context?: PortalCont
     title,
     context
       ? html`${header(context, title)}<p>${message}</p>`
-      : html`<div class="eyebrow">Procurebot supplier portal</div><h1>${title}</h1><p>${message}</p>`,
+      : html`<div class="eyebrow">WyattERP supplier portal</div><h1>${title}</h1><p>${message}</p>`,
   );
 }

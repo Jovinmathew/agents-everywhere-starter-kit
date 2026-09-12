@@ -20,8 +20,7 @@ export function App() {
         <div className="console__brand">
           <span className="console__brand-mark" aria-hidden="true" />
           <span className="console__brand-text">
-            <span className="console__brand-name">Procurebot</span>
-            <span className="console__brand-sub">ERP Console</span>
+            <span className="console__brand-name">WyattERP</span>
           </span>
         </div>
         <ul className="console__nav">

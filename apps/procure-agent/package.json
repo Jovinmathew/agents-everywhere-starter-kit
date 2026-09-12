@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Procurebot's agent: CopilotKit runtime with procurement tools over the shared Postgres.",
+  "description": "WyattERP's agent: CopilotKit runtime with procurement tools over the shared Postgres.",
   "scripts": {
     "dev": "node --env-file=../../.env --import tsx --watch src/server.ts",
     "start": "node --env-file=../../.env --import tsx src/server.ts",
