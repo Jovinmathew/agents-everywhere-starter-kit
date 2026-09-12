@@ -107,6 +107,7 @@ export function createProcurementTools(backend: ProcurementBackend = liveBackend
           sku: item.sku,
           unitOfMeasure: item.unitOfMeasure,
           category: item.category,
+          quantityOnHand: item.quantityOnHand,
           matchScore: item.matchScore,
         }));
       });
@@ -135,11 +136,13 @@ export function createProcurementTools(backend: ProcurementBackend = liveBackend
     description:
       "Create a draft request from catalog items you have already resolved. Sends nothing to anyone. Every line needs an itemId from browse_catalog. Resolve a vague date to YYYY-MM-DD against today first, and say which date you used. Follow this with find_suppliers, then propose_rfq.",
     parameters: z.object({
+      // Optional rather than nullable: the runtime's JSON-schema→zod converter
+      // rejects `{"type":"null"}`, which fails every Slack turn at tool setup.
       neededBy: z
         .string()
         .regex(/^\d{4}-\d{2}-\d{2}$/)
-        .nullable()
-        .describe("Concrete date YYYY-MM-DD, or null if they did not say"),
+        .optional()
+        .describe("Concrete date YYYY-MM-DD; omit if they did not say"),
       lines: z
         .array(
           z.object({
@@ -154,7 +157,7 @@ export function createProcurementTools(backend: ProcurementBackend = liveBackend
       return attempt("creating the request", async () => {
         const detail = await backend.createDraft({
           requesterId: requesterOf({ user, actor, platform }),
-          neededBy,
+          neededBy: neededBy ?? null,
           lines,
         });
         await thread.setState<ThreadBinding>({ requisitionId: detail.id });
