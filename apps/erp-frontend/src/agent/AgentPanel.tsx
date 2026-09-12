@@ -62,7 +62,7 @@ export function AgentPanel() {
     <aside className="console__agent" aria-label="Procurebot assistant">
       <div className="agent__header">
         <span className="console__brand-mark" aria-hidden="true" />
-        <span>Procurebot</span>
+        <span>Wyatt, The Procurer</span>
       </div>
       <PageContext />
       <GenerativeUI />
