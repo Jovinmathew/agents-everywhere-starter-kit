@@ -1,6 +1,7 @@
 import { AbstractAgent } from "@ag-ui/client";
 import type { BaseEvent, RunAgentInput } from "@ag-ui/core";
 import { makeAgent } from "agent-core";
+import { SLACK_PROCUREMENT_PROMPT } from "./procurement/prompt";
 import { Observable, type Subscription } from "rxjs";
 
 type ChannelAgentFactory = (threadId: string) => AbstractAgent;
@@ -80,6 +81,14 @@ export class ChannelRunAgent extends AbstractAgent {
   }
 }
 
+/**
+ * The purchasing agent. Workplace MCP is off: this surface acts through the
+ * procurement backend only, so the agent is not offered tools that would write
+ * somewhere else entirely.
+ */
 export function makeChannelAgent(threadId: string) {
-  return new ChannelRunAgent(makeAgent, threadId);
+  return new ChannelRunAgent(
+    (id) => makeAgent(id, { prompt: SLACK_PROCUREMENT_PROMPT, workplace: false }),
+    threadId,
+  );
 }
