@@ -29,7 +29,7 @@ The ERP pages (requisitions, suppliers, items, POs) update as quotes arrive.
 | Agent (CopilotKit runtime, OpenRouter or OpenAI via `agent-core`) | `apps/procure-agent` | 3002 |
 | Service layer + supplier portal (Express) | `apps/api` | 3001 |
 | Schema, migrations, seed, shared queries, quote ranking | `packages/procure-db` | — |
-| Postgres, Redis, Mailpit (local email inbox) | `docker-compose.yml` | 5434, 6381, 1026/8026 |
+| Postgres, Redis, Mailpit (local email inbox), Adminer (database browser) | `docker-compose.yml` | 5434, 6381, 1026/8026, 8081 |
 
 ### Quickstart
 
@@ -39,7 +39,7 @@ Needs Node 22+ and Docker.
 npm install
 cp .env.example .env        # then set MODEL_PROVIDER=openrouter, OPENROUTER_API_KEY, MODEL,
                             # and a random JWT_SIGNING_SECRET (openssl rand -hex 32)
-npm run db:up               # Postgres, Redis, Mailpit
+npm run db:up               # Postgres, Redis, Mailpit, Adminer
 npm run db:migrate
 npm run db:seed             # sample catalog and suppliers (example.com addresses)
 
@@ -49,7 +49,7 @@ npm run dev:agent
 npm run dev:erp             # open http://localhost:5173
 ```
 
-Supplier emails land in Mailpit at http://localhost:8026. Open a magic link there to submit a quote as that supplier. `npm run typecheck` checks every workspace. To start from an empty database, run `docker compose down -v`, then `db:up`, `db:migrate` and `db:seed`.
+Supplier emails land in Mailpit at http://localhost:8026. Open a magic link there to submit a quote as that supplier. To browse the database, open Adminer at http://localhost:8081/?pgsql=postgres&username=procurebot&db=procurebot (password `procurebot`). `npm run typecheck` checks every workspace. To start from an empty database, run `docker compose down -v`, then `db:up`, `db:migrate` and `db:seed`.
 
 ### What is real and what is sample data
 
