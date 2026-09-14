@@ -10,9 +10,8 @@ Deploy it like a queue consumer.
 | Railway | Vercel functions |
 | Fly.io, Render, plain Docker | any serverless request handler |
 
-`apps/erp-frontend` is an ordinary Vite app and deploys anywhere that serves
-static files, in front of `apps/api` and `apps/procure-agent`. It is only the
-Slack listener that needs a persistent process.
+`apps/web` is an ordinary Next.js app and deploys to Vercel
+fine. It is only the listener that needs a persistent process.
 
 ## Requirements
 
@@ -35,11 +34,11 @@ reconnect. Alert on `error`.
 
 ## Scaling
 
-Run **one listener instance.** The RFQ and PO approval buttons use process-local
-inline handlers. Claim-based delivery gives each event to one runtime; an
-identical replica may claim a click but lack its handler. Restarting also loses
-pending inline handlers. Before scaling, implement shared persistent action
-bindings and reconstructible registered-component handlers.
+Run **one listener instance for this demo**. Proposal approval
+buttons use process-local inline handlers. Claim-based delivery gives each event
+to one runtime; an identical replica may claim a click but lack its handler.
+Restarting also loses pending inline handlers. Before scaling, implement shared
+persistent action bindings and reconstructible registered-component handlers.
 
 **But not across environments.** Two runtimes declaring the same Channel name in
 the same project race per delivery and the loser gets nothing, silently. Give

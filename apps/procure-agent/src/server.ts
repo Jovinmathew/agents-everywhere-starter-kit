@@ -13,7 +13,7 @@ import { procurementTools } from "./tools";
 
 const runtime = new CopilotRuntime({
   agents: () => ({
-    default: makeAgent(randomUUID(), { prompt: PROCUREBOT_PROMPT, tools: procurementTools }),
+    default: makeAgent(randomUUID(), { prompt: PROCUREBOT_PROMPT, workplace: false, tools: procurementTools }),
   }),
 });
 

@@ -7,7 +7,7 @@ cost somebody real time.
 
 Set `MODEL_PROVIDER=openrouter` and `OPENROUTER_API_KEY` in root `.env`, choose an
 available `MODEL` slug, and restart. The app reports missing selected
-chat-provider configuration when the agent is used. See
+chat-provider configuration when the agent is used. `/voice` separately needs OpenAI Realtime credentials. See
 [model switching](model-switching.md).
 
 ## Verification versus configured startup
@@ -92,7 +92,7 @@ a `MessageRef`. Use a block body: `async ({ thread }) => { await thread.post(…
 
 ## Research produces a card without source links
 
-`search_web` posts a **Search sources** card directly from Exa's returned URLs before handing the evidence back to the agent. The source buttons remain available even when the agent ends with no prose. Each search has its own query and references. Empty searches visibly report **No sources found**.
+`search_web` posts a **Search sources** card directly from Exa's returned URLs before handing the evidence back to the agent. The source buttons remain available when the agent ends with an incident card and no prose. Each search has its own query and references; public documentation does not establish the incident's root cause. Empty searches visibly report **No sources found**.
 
 Search and invalid-source failures post a visible failure notice and preserve the error for the agent. Rejected source-card deliveries propagate as errors. A completed delivery therefore does not necessarily mean research succeeded. If an older runtime still returns no sources, sync `apps/channel/src/search.tsx` and `apps/channel/src/tools.tsx` together and restart it.
 
@@ -100,7 +100,7 @@ Search and invalid-source failures post a visible failure notice and preserve th
 
 A delivered card alone does not prove the same Channel turn can continue after a tool result. With the pinned Channels/runtime pair, the run loop can re-enter the agent as soon as the previous observable completes. CopilotKit's `BuiltInAgent` clears its internal abort controller later, during async cleanup, so reusing the same inner instance can throw `Agent is already running. Call abortRun() first or create a new instance.` before the follow-up answer or status clear is delivered.
 
-Wyatt's Slack surface wraps the shared `makeAgent` factory with `ChannelRunAgent` in `apps/channel/src/agent.ts`. The wrapper keeps the public AG-UI transcript, state, subscribers, clone behavior, and cancellation on the outer agent, but delegates each low-level `run(input)` to a fresh inner `BuiltInAgent`. This is scoped to Channels; `apps/procure-agent` continues using the shared factory directly.
+The Slack template wraps the shared `makeAgent` factory with `ChannelRunAgent` in `apps/channel/src/agent.ts`. The wrapper keeps the public AG-UI transcript, state, subscribers, clone behavior, and cancellation on the outer agent, but delegates each low-level `run(input)` to a fresh inner `BuiltInAgent`. This is scoped to Channels; web and mobile continue using the shared factory directly.
 
 Run `npm test --workspace channel` to exercise the local lifecycle regression: a real `BuiltInAgent` reproduces the same-tick continuation guard, the channel wrapper continues with tool-result transcript and state intact, and cancellation/teardown are forwarded to the active inner agent. That test proves the local lifecycle boundary only. Actual Slack delivery still requires a live managed Channel run; preserve raw runtime stdout/stderr and Intelligence delivery traces when checking source cards, final answers, and a cleared working indicator.
 
@@ -149,8 +149,14 @@ If you genuinely need vitest, `--legacy-peer-deps` gets you past it — put it i
 
 - `npm run verify` — retained workspace typechecks and offline tests
 - `npm run channel:status` — real doctor command for the Channel
+- `.agents/skills/build-channels-agent/SKILL.md` — the verified API surface plus
+  a "common mistakes" list
 - The canonical, never-stale setup workflow: <https://copilotkit.ai/channels-guide.md>
 
 > One stale doc to know about: `docs.copilotkit.ai/slack/deploy-and-operate`
 > still tells you to install `@copilotkit/channels@0.6.1` with
 > `@copilotkit/runtime@1.65.0`. Use the versions in this repo's `package.json`.
+
+## A web follow-up does not appear after refresh
+
+Only approved Ambiguous records should survive refresh. First confirm `AMBIGUOUS_API_KEY` is set, restart `npm run dev:web`, prepare a proposal, and click **Approve & save to Ambiguous** on the page. Then refresh and use the returned record ID or **Refresh from Ambiguous**. If the provider returns no retrievable record, the persistence check has not passed. See [the web template](../apps/web/README.md#try-the-flow).

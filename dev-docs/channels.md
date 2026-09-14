@@ -72,11 +72,11 @@ Multiple runtimes declaring the same Channel name race per delivery, and the
 loser gets nothing — silently. The tell is a Slack reply your terminal knows
 nothing about. **Give a local runtime its own Intelligence project.**
 
-Run **one listener instance for the RFQ and PO approval buttons**. Their inline
-handlers live in the process that posted the card. A replica can claim the
-click without that closure, even with an identical build. Keep the listener
-running until approval; before scaling, implement shared persistent bindings
-and reconstructible registered-component handlers.
+Run **one listener instance for the shipped proposal and research approval
+buttons**. Their inline handlers live in the process that posted the card. A
+replica can claim the click without that closure, even with an identical build.
+Keep the listener running until approval; before scaling, implement shared
+persistent bindings and reconstructible registered-component handlers.
 
-Managed delivery does not support blocking `awaitChoice`; the approval tools
-post a card and a later click reports its decision without resuming the agent.
+Managed delivery does not support blocking `awaitChoice`; the proposal demo
+posts a card and a later click reports its decision without resuming the agent.

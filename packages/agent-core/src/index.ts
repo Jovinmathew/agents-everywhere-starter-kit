@@ -5,10 +5,12 @@
  */
 export { makeAgent } from "./agent";
 export { SURFACE_RULES } from "./prompt";
+export { MOBILE_FINANCE_PROMPT } from "./mobile-finance-prompt";
 export { resolveModel } from "./model";
 export { searchWeb, isSearchConfigured } from "./capabilities/search";
 export {
-  searchWebParameters,
-  type SearchWebArgs,
-  type SearchHit,
-} from "./schemas";
+  workplaceMcpServers,
+  isWorkplaceConfigured,
+  WORKPLACE_CONTEXT,
+} from "./capabilities/workplace";
+export * from "./shared";

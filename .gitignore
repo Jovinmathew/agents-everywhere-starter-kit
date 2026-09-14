@@ -6,8 +6,12 @@ dist/
 .DS_Store
 .turbo/
 *.tsbuildinfo
+.next/
+next-env.d.ts
+assets/fonts/
+apps/mobile/.expo/
 
-# Local attempt/upload metadata (not task storage)
+# Web approval and attempt metadata (not task storage)
 .data/
 
 # Added by CopilotKit CLI: credential files, which must never be committed.

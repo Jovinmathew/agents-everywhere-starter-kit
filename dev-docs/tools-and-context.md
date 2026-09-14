@@ -1,21 +1,20 @@
 # Tools, native UI, and approval gates
 
-Wyatt's Slack surface uses CopilotKit Channels for tools, conversation context, and native UI. The examples below live in `apps/channel/src/`.
+The channel template uses CopilotKit Channels for tools, conversation context, and native UI. The examples below live in `apps/channel/src/`.
 
 ## Tools — `defineChannelTool`
 
 A channel tool handler receives the **live thread**, so it can post native UI
 and return a result to the agent. Managed deliveries finish without waiting for
-a later button click. Wyatt's purchasing tools (`apps/channel/src/procurement/tools.tsx`)
-follow this shape:
+a later button click.
 
 ```ts
-const searchCatalog = defineChannelTool({
-  name: "search_catalog",
-  description: "Search the item catalog by name or description.",
-  parameters: z.object({ query: z.string() }),
-  async handler({ query }, { thread, user, actor, signal, platform }) {
-    return await searchItems(query);
+const getOncall = defineChannelTool({
+  name: "get_oncall",
+  description: "Look up who is currently on call for a team.",
+  parameters: z.object({ team: z.string() }),
+  async handler({ team }, { thread, user, actor, signal, platform }) {
+    return await fetchOncall(team);
   },
 });
 ```
@@ -42,32 +41,48 @@ Files with JSX must be `.tsx`, and the tsconfig must set
 
 Vocabulary: `Message` `Header` `Section` `Markdown` `Fields`/`Field` `Context`
 `Divider` `Image` `Table`/`Row`/`Cell` `Chart` `Actions` `Button` `Select`
-`Input`, plus modal components. **Do not invent tags or props** — a made-up tag
-does not lower to a valid IR node.
+`Input`, plus modal components. **Do not invent tags or props** — see
+`.agents/skills/build-channels-agent/references/ui-components.md` for the full
+list. A made-up tag does not lower to a valid IR node.
 
-Wyatt does not use `defineChannelComponent` (agent-called components). Its
-cards — the request card, the quote comparison, the two approval cards, the PO
-— are posted directly by the tools that hold the backend response
-(`apps/channel/src/procurement/cards.tsx`), so a price or total can never be
-retyped by the model on its way to the screen. `channel.tsx` registers
-`components: []` for exactly this reason.
+## Agent-rendered components — `defineChannelComponent`
 
-## The approval gates
+Turns a component into a tool the agent can call to draw UI itself. This minimal
+illustration is smaller than the incident schema shipped in `components.tsx`:
 
-`propose_rfq` and `propose_award` (`apps/channel/src/procurement/tools.tsx`) use
-`thread.post()` with inline `onClick` handlers. Each posts a native card and
-immediately returns **pending**, instructing the agent to stop without calling
-the write tool itself. On a later delivery, **Send**/**Approve** replaces the
-card and performs the real write (emailing suppliers, issuing the PO); **Cancel**
-reports that nothing was sent. Neither click resumes the agent — see
-`apps/channel/src/procurement/tools.tsx` for the queue-and-settle-once pattern
-that makes a click honored exactly once.
+```tsx
+export const IncidentCard = defineChannelComponent({
+  name: "incident_card",
+  description: "Render a short brief as a native card.",
+  parameters: z.object({ headline: z.string(), summary: z.string() }),
+  render({ headline, summary }) {
+    return <Message><Header>{headline}</Header><Section>{summary}</Section></Message>;
+  },
+});
+```
+
+Pass via `createChannel({ components: [IncidentCard] })`. Registration is also what
+lets handlers be recovered after a restart when a durable store is configured.
+
+This kit ships `incident_card` and `timeline`. Use a native artifact when it makes
+the incident easier to understand. Evaluate the resulting interaction using the
+[official judging criteria](../hackathon-overview.md#judging-criteria).
+
+## Managed action proposals
+
+`propose_action` uses `thread.post()` with inline `onClick` handlers. It posts a
+native card and immediately returns **decision pending**, instructing the agent
+to stop without calling write tools. On a later delivery, **Approve** replaces
+the card with “Approved proposal. No action was executed.” **Hold** reports that
+nothing ran and the action must not be taken. Neither click resumes the agent.
+This is a proposal demo, not a production executor or a hard authorization gate
+around arbitrary MCP writes.
 
 The installed managed adapter sets `supportsBlockingChoice: false`:
 `thread.awaitChoice()` rejects before posting a card. Use blocking `awaitChoice`
 only with adapters that support it. Agents that emit interrupts can instead use
-`onInterrupt` plus `Thread.resume()` on a later interaction delivery; Wyatt's
-approval tools do not implement that continuation flow.
+`onInterrupt` plus `Thread.resume()` on a later interaction delivery; this kit's
+BuiltInAgent proposal tool does not implement that continuation flow.
 
 Run **one listener instance**, and keep it running until the click. Inline
 handlers are process-local and cannot be recovered after a restart or by another
