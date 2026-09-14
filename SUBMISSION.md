@@ -1,6 +1,8 @@
 # Submission — Wyatt
 
-Choose your city on the [global event page](https://aitinkerers.org/hackathons/global/agents-everywhere). Use that city's participant portal for the submission deadline and published judging criteria, and its handbook for eligibility and required deliverables. See [hackathon-rules.md](hackathon-rules.md) for the agent-readable summary.
+Choose your city on the [global event page](https://aitinkerers.org/hackathons/global/agents-everywhere). Use that city's participant portal for the submission deadline and published judging criteria, and its handbook for eligibility and required deliverables.
+
+> This is a historical record from the hackathon submission. The starter kit's own docs (`hackathon-overview.md`, `hackathon-rules.md`, `using-sponsor-tools.md`, `.agents/`) and the unused `apps/web`/`apps/mobile` demo templates they refer to below have since been removed from this repo now that it is just Wyatt.
 
 > **Status:** draft prepared for the team. Items marked **TEAM** need a person to confirm or do them; nothing here has been submitted or posted.
 

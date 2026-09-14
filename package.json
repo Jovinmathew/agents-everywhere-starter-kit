@@ -1,9 +1,9 @@
 {
-  "name": "agents-everywhere-starter-kit",
+  "name": "wyatt-the-procurer",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Starter kit for the Agents, Everywhere: Bots, Channels & More global hackathon.",
+  "description": "Wyatt: a procurement agent for Slack and the WyattERP console.",
   "license": "MIT",
   "engines": {
     "node": ">=22"
@@ -11,18 +11,16 @@
   "workspaces": [
     "packages/*",
     "apps/channel",
-    "apps/web",
     "apps/api",
     "apps/procure-agent",
     "apps/erp-frontend"
   ],
   "scripts": {
-    "dev": "npm run dev:web",
+    "dev": "npm run dev:erp",
     "dev:slack": "npm run dev --workspace channel",
     "channel:status": "npx copilotkit@latest channels status --json",
     "channel:setup": "npx copilotkit@latest channels setup",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "dev:web": "npm run dev --workspace web",
     "test": "npm run test --workspaces --if-present",
     "verify": "npm run typecheck && npm test",
     "db:up": "docker compose up -d --wait",

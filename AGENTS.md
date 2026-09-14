@@ -1,12 +1,6 @@
 # Notes for coding agents
 
-Read [hackathon-overview.md](hackathon-overview.md), [hackathon-rules.md](hackathon-rules.md), and [using-sponsor-tools.md](using-sponsor-tools.md), then the chosen app README in `apps/channel`, `apps/web`, or `apps/mobile`. Build the team's own workflow; the incident app is infrastructure reference code.
-
-CopilotKit powers the Slack and web templates. The mobile starting point in `apps/mobile` has its own install and environment; follow its README for setup and checks.
-
-Read `.agents/skills/build-channels-agent/SKILL.md` before touching anything in
-`apps/channel/`. It carries the verified API surface; the most common
-failure mode in this codebase is inventing a plausible-looking Channels API.
+Wyatt is a procurement agent that lives in Slack (`apps/channel`) and in the WyattERP chat panel (`apps/procure-agent` + `apps/erp-frontend`). Both share `packages/procure-db` for data and `packages/agent-core` for the model/agent factory. See the root [README](README.md) for the full architecture and quickstart.
 
 Hard-won rules that are easy to get wrong here:
 
@@ -20,11 +14,17 @@ Hard-won rules that are easy to get wrong here:
 - **Files containing JSX must be `.tsx`**, and the tsconfig must set
   `jsxImportSource: "@copilotkit/channels"`. This is not React.
 - **`maxSteps` defaults to 1** on `BuiltInAgent`. Any agent with tools needs more,
-  or it calls one tool and stops before seeing the result.
+  or it calls one tool and stops before seeing the result. `agent-core` sets 10.
 - **Do not add `identifyUser` to `CopilotRuntime`.** It belongs on
   `createChannel`, and must be absent on a Channels-only runtime.
 - **Handlers return `void`.** `thread.post()` returns a `MessageRef`, so a
   concise arrow body fails under `strict`. Use a block body and `await`.
-- **Never invent a component or prop.** The vocabulary is fixed — see
-  `references/ui-components.md` in the skill.
-- Run `npm run typecheck` before claiming anything works.
+- **Never invent a Channels JSX component or prop.** The vocabulary is fixed —
+  `Message` `Header` `Section` `Markdown` `Fields`/`Field` `Context` `Divider`
+  `Table`/`Row`/`Cell` `Actions` `Button` `Select` `Input`, plus modal
+  components. A made-up tag does not lower to a valid IR node.
+- **Sending an RFQ and issuing a PO are approval-gated.** Neither agent has a
+  tool that emails a supplier or creates a PO directly — see
+  `apps/channel/src/procurement/tools.tsx` and
+  `apps/erp-frontend/src/agent/generativeUi.tsx`. Keep it that way.
+- Run `npm run verify` before claiming anything works.

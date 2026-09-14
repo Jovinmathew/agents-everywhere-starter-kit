@@ -82,13 +82,12 @@ export class ChannelRunAgent extends AbstractAgent {
 }
 
 /**
- * The purchasing agent. Workplace MCP is off: this surface acts through the
- * procurement backend only, so the agent is not offered tools that would write
- * somewhere else entirely.
+ * The purchasing agent, with the Slack-specific prompt and tools set in
+ * channel.tsx.
  */
 export function makeChannelAgent(threadId: string) {
   return new ChannelRunAgent(
-    (id) => makeAgent(id, { prompt: SLACK_PROCUREMENT_PROMPT, workplace: false }),
+    (id) => makeAgent(id, { prompt: SLACK_PROCUREMENT_PROMPT }),
     threadId,
   );
 }
